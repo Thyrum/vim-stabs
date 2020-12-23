@@ -1,0 +1,191 @@
+*stabs.txt* Plugin to use tab for indentation and space for alignment
+
+Version: 1.0
+Author: Aron de Jong <adj00 at protonmail.com>
+License: GPL-3.0 License
+
+Version: 0.0.1
+
+==============================================================================
+CONTENTS                                                      *stabs-contents*
+
+    1. Introduction .......................... |stabs-introduction|
+    2. Installation .......................... |stabs-installation|
+    3. Configuration ......................... |stabs-configuration|
+    4. Maps .................................. |stabs-maps|
+    5. Functions ............................. |stabs-functions|
+    6. Changelog ............................. |stabs-changelog|
+
+==============================================================================
+INTRODUCTION                                              *stabs-introduction*
+
+There are many different arguments about tabs and stuff. My current personal
+preference is a choice of tabbing that is independent of anybody's viewing
+setting.
+
+For the beginning of the line, this means we can use which will expand
+whatever the reader wants it to. Trying to line up tabs at the end of the line
+is a little trickier, and making a few assumptions, my preference is to use
+spaces there.
+
+This script allows you to use your normal tab settings for the beginning of
+the line, and have tabs expanded as spaces anywhere else. This effectively
+distinguishes indent from alignment.
+
+==============================================================================
+INSTALLATION                                              *stabs-installation*
+
+With Pathogen~
+>
+  mkdir -p ~/.vim/bundle && cd ~/.vim/bundle && git clone https://github.com/Thyrum/vim-stabs.git
+
+Then run `:Helptags` from within vim to add helptags for the documentation.
+
+
+Using vim-plug~
+
+Add this to your `init.vim` or `.vimrc`: >
+
+  Plug 'Thyrum/vim-stabs'
+
+And run: >
+
+  :PlugInstall
+
+
+Manually~
+
+Just copy `stabs.vim` into `~/.vim/plugin`. Notice that this will not install
+the documentation.
+
+==============================================================================
+CONFIGURATION                                            *stabs-configuration*
+
+*g:loaded_stabs*
+  This variable indicates stabs has already been loaded. Set it to 1 to
+  disable stabs.
+
+*g:stabs_indent_regex* *b:stabs_indent_regex*
+  A regex to test indentation against. The beginning of the line is checked
+  against this to determine if a tab should be inserted.
+  |b:stabs_indent_regex| can be set to change the indent regex for a specific
+  buffer. This is usefull when using autocommands to set the indent regex
+  depending on the filetype.
+
+  An example of when this is usefull is for `C/C++` files. If you want to use
+  tabs for the indentation of preprocessor directives, you can do >
+
+    autocmd FileType cpp,c let b:stabs_indent_regex = '^#\?\t*$'
+<
+  to allow the following indentation using tabs >
+
+    #ifdef DEBUG
+    #	define ...
+    #endif
+<
+  Both |g:stabs_indent_regex| and |b:stabs_indent_regex| should always start
+  with a '^' (beginning of line character) and end with a '$' (end of line
+  character).
+
+  WARNING
+  Setting |b:stabs_indent_regex| to '' does not disable it. To remove it once
+  defined, use >
+
+    unlet b:stabs_indent_regex
+<
+  |g:stabs_indent_regex| defaults to '^\t*$'.
+  |b:stabs_indent_regex| defaults to not exist.
+
+*g:stabs_maps*
+  Specifies which maps to define. Valid are the options below. See
+  |stabs-maps| for more information on the different maps.
+
+  Option  Meaning    Associated key~
+  t       Tab        <Tab>
+  b       Backspace  <BS>
+  o       o          <o>
+  O       O          <O>
+  c       Enter      <CR>
+  =       =          {=}
+
+  Defaults to 'tboOc='
+
+*g:stabs_insert_leave*
+  If set to 1, an autocommand is defined to clear the current line if it only
+  consists of whitespace when leaving insert mode.
+
+==============================================================================
+MAPS                                                              *stabs-maps*
+
+Insert mode maps~
+
+The following remaps can be enabled by setting |g:stabs_maps|: >
+
+  inoremap <silent> <expr> <tab> StabsTab()
+  inoremap <silent> <expr> <BS> StabsBS()
+  inoremap <silent> <expr> <CR> StabsCR()
+  nnoremap <silent> o o<c-r>=StabsFixAlign(line('.'))."\<lt>END>"<CR>
+  nnoremap <silent> O O<c-r>=StabsFixAlign(line('.'))."\<lt>END>"<CR>
+  nnoremap <silent> <expr> = StabsEqual()
+
+Notice that the `\<lt>END>` in the <o> and <O> maps evaluates to <END>, which
+is simply the end key.
+
+==============================================================================
+FUNCTIONS                                                    *stabs-functions*
+
+                                                        *StabsTab()* *Stabs()*
+`StabsTab()` `Stabs()`
+  Returns the characters that need to be inserted when <Tab> is pressed.
+  Returns a <Tab> only if the characters before the cursor match
+  |g:stab_indent_regex| and returns spaces up to the next tabwidth offset
+  otherwise.
+
+                                                                   *StabsBS()*
+`StabsBS()`
+  Returns the characters that need to be inserted when <BS> is pressed.
+  Returns '<BS>' if the preceeding character is not a space or the current
+  line only consists of indentation (matches |g:stab_indent_regex|). If the
+  previous character is a space, returns multiple <BS> such that everything
+  until the next non-whitespace character or the next tabwidth offset
+  (whichever is the smallest) is deleted.
+
+                                                                   *StabsCR()*
+`StabsCR()`
+  Returns the characters that need to be inserted when <CR> is pressed.
+  Using these characters ensures the new line will be indented correctly.
+
+                                                                *StabsEqual()*
+`StabsEqual()`
+  Returns the characters that need to be inserted when {=} is pressed.
+  This ensures the indentation fix will use tabs for indentation and spaces
+  for alignment, effectively calling |StabsFixAlign()| for all lines in the
+  range.
+
+                                                             *StabsFixAlign()*
+`StabsFixAlign(line)`
+  Fix the alignment of the line with number 'line'. This ensures the line uses
+  tabs for indentation and spaces for alignment. A empty string will always be
+  returned.
+
+                                                               *StabAlignTo()*
+`StabAlignTo(n)`
+  Returns a string of spaces needing to be inserted from the cursor to get to
+  the n'th column after the indent.
+  If the indentation is already past column n or alignment spaces have already
+  gone past column n, an empty string is returned.
+
+                                                                *:RetabIndent*
+`:RetabIndent[!] [tabstop]`
+  This is similar to `:retab`, with the exception that it affects all and only
+  whitespace at the start of the line, changing it to suit your current (or
+    new) 'tabstop' and 'expandtab' setting. With the bang (!) at the end, the
+  command also strips trailing whitespace.
+
+==============================================================================
+CHANGELOG                                                    *stabs-changelog*
+
+1.0: - Initial release
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:et
