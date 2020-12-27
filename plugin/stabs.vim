@@ -238,12 +238,12 @@ if g:stabs_maps =~ '='
 	nnoremap <silent> <expr> = StabsEqual()
 endif
 fun! StabsEqual()
-	set operatorfunc=s:StabsRedoIndent
+	set operatorfunc=StabsRedoIndent
 	" Call the operator func so we get the range
 	return 'g@'
 endfun
 
-fun! s:StabsRedoIndent(type,...)
+fun! StabsRedoIndent(type,...)
 	set operatorfunc=
 	let ln=line("'[")
 	let lnto=line("']")
