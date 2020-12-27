@@ -66,8 +66,9 @@ CONFIGURATION                                            *stabs-configuration*
   disable stabs.
 
 *g:stabs_indent_regex* *b:stabs_indent_regex*
-  A regex to test indentation against. The beginning of the line is checked
-  against this to determine if a tab should be inserted.
+  A regex to determine wether something is indentation. This regex should be
+  such that searching for it finds all indents (including zero-indents), thus
+  is should probably start with a '^' and NOT end with a '$'.
   |b:stabs_indent_regex| can be set to change the indent regex for a specific
   buffer. This is usefull when using autocommands to set the indent regex
   depending on the filetype.
@@ -75,7 +76,7 @@ CONFIGURATION                                            *stabs-configuration*
   An example of when this is usefull is for `C/C++` files. If you want to use
   tabs for the indentation of preprocessor directives, you can do >
 
-    autocmd FileType cpp,c let b:stabs_indent_regex = '^#\?\t*$'
+    autocmd FileType cpp,c let b:stabs_indent_regex = '^#\?\t*'
 <
   to allow the following indentation using tabs >
 
@@ -83,9 +84,6 @@ CONFIGURATION                                            *stabs-configuration*
     #	define ...
     #endif
 <
-  Both |g:stabs_indent_regex| and |b:stabs_indent_regex| should always start
-  with a '^' (beginning of line character) and end with a '$' (end of line
-  character).
 
   WARNING
   Setting |b:stabs_indent_regex| to '' does not disable it. To remove it once
@@ -93,7 +91,7 @@ CONFIGURATION                                            *stabs-configuration*
 
     unlet b:stabs_indent_regex
 <
-  |g:stabs_indent_regex| defaults to '^\t*$'.
+  |g:stabs_indent_regex| defaults to '^\t*'.
   |b:stabs_indent_regex| defaults to not exist.
 
 *g:stabs_maps*

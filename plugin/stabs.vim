@@ -58,15 +58,11 @@ fun! s:GetIndentRegex()
 	endif
 endfun
 
-fun! s:GetIndentRegexNoEndline()
-  return strcharpart(s:GetIndentRegex(), 0, strchars(s:GetIndentRegex())-1)
-endfun
-
 " Insert a smart tab.
 fun! StabsTab()
 	" Clear the status
 	echo ''
-	if strpart(getline('.'),0,col('.')-1) =~ s:GetIndentRegex()
+	if strpart(getline('.'),0,col('.')-1) =~ s:GetIndentRegex().'$'
 		return "\<Tab>"
 	endif
 
@@ -84,7 +80,7 @@ endfun
 if g:stabs_insert_leave
 	fun! s:CheckLeaveLine(line)
 		if ('cpo' !~ 'I') && exists('b:stabs_last_align') && (a:line == b:stabs_last_align)
-			exe 's/'.s:GetIndentRegexNoEndline().' *$//e'
+			exe 's/'.s:GetIndentRegex().' *$//e'
 		endif
 	endfun
 
@@ -137,7 +133,7 @@ endfun
 " of line @lineNo. @lineNo is passed to `getline` and thus can also be an
 " expression.
 fun! s:StartColumn(lineNo)
-	return strdisplaywidth(matchstr(getline(a:lineNo),s:GetIndentRegexNoEndline().' *'))
+	return strdisplaywidth(matchstr(getline(a:lineNo),s:GetIndentRegex().' *'))
 endfun
 
 " Align to column @n. Return a string of the amount of spaces needing to be
