@@ -30,9 +30,9 @@ exception that it affects all and only whitespace at the start of the line,
 changing it to suit your current (or new) `tabstop` and `expandtab` setting.
 With the bang (!) at the end, the command also strips trailing  whitespace.
 
-## Installation:
+## Installation
 
-### With Pathogen:
+### With Pathogen
 
 ```sh
 mkdir -p ~/.vim/bundle && cd ~/.vim/bundle && git clone https://github.com/Thyrum/vim-stabs.git
@@ -40,7 +40,7 @@ mkdir -p ~/.vim/bundle && cd ~/.vim/bundle && git clone https://github.com/Thyru
 
 Then run `:Helptags` from within vim to add helptags for the documentation.
 
-### Using vim-plug:
+### Using vim-plug
 
 Add this to your `init.vim` or `.vimrc`:
 ```vim
@@ -49,7 +49,30 @@ Plug 'Thyrum/vim-stabs'
 
 Then run `:PlugInstall` from within vim.
 
-### Manually:
+### Manually
 
 Just copy `stabs.vim` into `~/.vim/plugin`. Notice that this will not
 install the documentation.
+
+## Tips
+
+### coc.nvim
+
+The tab- and enter-maps of vim-stabs will conflict with those of `coc.nvim`.
+To fix this, change `coc.nvim`'s recommended `<Tab>` and `<CR>` remaps to the
+following:
+
+```vim
+  let g:stabs_maps = 'boO='
+
+  " Use tab for trigger completion with characters ahead and navigate.
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? StabsTab():
+        \ coc#refresh()
+  
+  " Make <CR> auto-select the first completion item and notify coc.nvim to
+  " format on enter.
+  inoremap <silent><expr> <CR> pumvisible() ? coc#_select_confirm()
+                           \: "\<C-g>u".StabsCR()."\<c-r>=coc#on_enter()\<CR>"
+```
