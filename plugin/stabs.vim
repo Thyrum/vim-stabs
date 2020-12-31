@@ -5,7 +5,7 @@ let g:loaded_stabs = 1
 
 
 if !exists('g:stabs_indent_regex')
-	let g:stabs_indent_regex = '^\t*$'
+	let g:stabs_indent_regex = '^\t*'
 endif
 
 if !exists('g:stabs_maps')
