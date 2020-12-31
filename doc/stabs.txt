@@ -136,14 +136,14 @@ FUNCTIONS                                                    *stabs-functions*
 `StabsTab()` `Stabs()`
   Returns the characters that need to be inserted when <Tab> is pressed.
   Returns a <Tab> only if the characters before the cursor match
-  |g:stab_indent_regex| and returns spaces up to the next tabwidth offset
+  |g:stabs_indent_regex| and returns spaces up to the next tabwidth offset
   otherwise.
 
                                                                    *StabsBS()*
 `StabsBS()`
   Returns the characters that need to be inserted when <BS> is pressed.
   Returns '<BS>' if the preceeding character is not a space or the current
-  line only consists of indentation (matches |g:stab_indent_regex|). If the
+  line only consists of indentation (matches |g:stabs_indent_regex|). If the
   previous character is a space, returns multiple <BS> such that everything
   until the next non-whitespace character or the next tabwidth offset
   (whichever is the smallest) is deleted.
