@@ -166,8 +166,8 @@ FUNCTIONS                                                    *stabs-functions*
   tabs for indentation and spaces for alignment. A empty string will always be
   returned.
 
-                                                               *StabAlignTo()*
-`StabAlignTo(n)`
+                                                              *StabsAlignTo()*
+`StabsAlignTo(n)`
   Returns a string of spaces needing to be inserted from the cursor to get to
   the n'th column after the indent.
   If the indentation is already past column n or alignment spaces have already
