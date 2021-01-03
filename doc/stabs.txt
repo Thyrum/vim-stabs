@@ -1,6 +1,6 @@
 *stabs.txt* Plugin to use tab for indentation and space for alignment
 
-Version: 1.1
+Version: 1.2
 Author: Aron de Jong <adj00 at protonmail.com>
 License: GPL-3.0 License
 
@@ -210,7 +210,9 @@ CHANGELOG                                                    *stabs-changelog*
 1.1: - Add coc.nvim recommended maps
      - Fix {=} operator not working
      - Remove '$' requirement from |g:stabs_indent_regex| and
-       |b:stabs_indent_regex|.
+       |b:stabs_indent_regex|
+1.2: - Small bugfixes
+     - Fix consistency in "stabs_" vs "stab_" variables
 
 ==============================================================================
  vim:tw=78:ts=8:ft=help:norl:et
