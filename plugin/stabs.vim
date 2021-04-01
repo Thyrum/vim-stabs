@@ -175,7 +175,11 @@ fun! StabsFixAlign(line)
 
 		if &indentexpr != ''
 			let v:lnum=a:line
+			mark `
 			sandbox exe 'let inda='.&indentexpr
+			" The javascript formatter would change the rule number. This jumps back
+			" to the previous line, preventing sudden cursor jumps
+			normal ``
 			if inda == -1
 				let inda=indent(a:line-1)
 			endif
