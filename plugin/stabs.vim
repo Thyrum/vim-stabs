@@ -3,7 +3,6 @@ if exists('g:loaded_stabs') && g:loaded_stabs
 endif
 let g:loaded_stabs = 1
 
-
 if !exists('g:stabs_indent_regex')
 	let g:stabs_indent_regex = '^\t*'
 endif
@@ -341,9 +340,14 @@ function StabsUninstall()
 	let g:stabs_active = 0
 endfunc
 
+function StabsToggle()
+	if !exists('g:stabs_active') | let g:stabs_active = 0 | endif
+	call function(g:stabs_active ? 'StabsUninstall' : 'StabsInstall')()
+endfunc
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call StabsInstall()
+call StabsToggle()
 
 " Retab the indent of a file - ie only the first nonspace.
 "   Optional argument specified the value of the new tabstops
