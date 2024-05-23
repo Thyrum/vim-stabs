@@ -17,14 +17,6 @@ if !exists('g:stabs_insert_leave')
 endif
 
 
-if g:stabs_maps =~ 't'
-	inoremap <silent> <expr> <tab> StabsTab()
-endif
-
-if g:stabs_maps =~ 'b'
-	inoremap <silent> <expr> <BS> StabsBS()
-endif
-
 " TODO: Properly add CTRL-d and CTRL-t mappings
 "imap <silent> <expr> <c-d> :call <SID>SmartDeleteTab()<CR>
 "imap <silent> <c-t> <SID>SmartInsertTab()
@@ -83,12 +75,6 @@ if g:stabs_insert_leave
 			exe 's/'.s:GetIndentRegex().' *$//e'
 		endif
 	endfun
-
-	" Remove indentation tabs when leaving insert mode
-	augroup Stabs
-		autocmd!
-		autocmd InsertLeave * call <SID>CheckLeaveLine(line('.'))
-	augroup END
 endif
 
 
@@ -225,22 +211,6 @@ fun! StabsCR()
 	endif
 endfun
 
-if g:stabs_maps =~ 'c'
-	inoremap <silent> <expr> <CR> StabsCR()
-endif
-" Notice \<lt>END> results in \<END>, which is the end key
-if g:stabs_maps =~ 'o'
-	nnoremap <silent> o o<c-r>=StabsFixAlign(line('.'))."\<lt>END>"<CR>
-endif
-if g:stabs_maps =~ 'O'
-	nnoremap <silent> O O<c-r>=StabsFixAlign(line('.'))."\<lt>END>"<CR>
-endif
-
-" The = is implemented by remapping it so that it calls the original = and
-" then checks all indents using StabsFixAlign.
-if g:stabs_maps =~ '='
-	nnoremap <silent> <expr> = StabsEqual()
-endif
 fun! StabsEqual()
 	set operatorfunc=StabsRedoIndent
 	" Call the operator func so we get the range
@@ -297,6 +267,83 @@ fun! s:RetabIndent( bang, firstl, lastl, tab )
 	if newtabstop != &tabstop | let &tabstop = newtabstop | endif
 endfun
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function StabsInstall()
+
+	if g:stabs_active | return | endif
+
+	" imaps
+	if g:stabs_maps =~ 't'
+		inoremap <silent> <expr> <tab> StabsTab()
+	endif
+	if g:stabs_maps =~ 'b'
+		inoremap <silent> <expr> <BS> StabsBS()
+	endif
+	if g:stabs_maps =~ 'c'
+		inoremap <silent> <expr> <CR> StabsCR()
+	endif
+
+	" nmaps
+	if g:stabs_maps =~ 'o'
+		" Notice \<lt>END> results in \<END>, which is the end key
+		nnoremap <silent> o
+		\ o<c-r>=StabsFixAlign(line('.'))."\<lt>END>"<CR>
+	endif
+	if g:stabs_maps =~ 'O'
+		nnoremap <silent> O
+		\ O<c-r>=StabsFixAlign(line('.'))."\<lt>END>"<CR>
+	endif
+	if g:stabs_maps =~ '='
+		" The = is implemented by remapping it so that it calls the
+		" original = and then checks all indents using StabsFixAlign.
+		nnoremap <silent> <expr> =
+		\ StabsEqual()
+	endif
+
+	" autocmds
+	if g:stabs_insert_leave
+		augroup Stabs
+		au!
+		autocmd InsertLeave * call <SID>CheckLeaveLine(line('.'))
+		augroup END
+	endif
+
+	let g:stabs_active = 1
+endfunc
+
+function StabsUninstall()
+
+	if !g:stabs_active | return | endif
+
+	if g:stabs_maps =~ 't'
+		iunmap <tab>
+	endif
+	if g:stabs_maps =~ 'b'
+		iunmap <bs>
+	endif
+	if g:stabs_maps =~ 'c'
+		iunmap <cr>
+	endif
+	if g:stabs_maps =~ 'o'
+		nunmap o
+	endif
+	if g:stabs_maps =~ 'O'
+		nunmap O
+	endif
+	if g:stabs_maps =~ '='
+		nunmap =
+	endif
+	if g:stabs_insert_leave
+		autocmd! Stabs
+	endif
+
+	let g:stabs_active = 0
+endfunc
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+call StabsInstall()
 
 " Retab the indent of a file - ie only the first nonspace.
 "   Optional argument specified the value of the new tabstops
