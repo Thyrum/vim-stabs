@@ -79,7 +79,7 @@ endfun
 
 if g:stabs_insert_leave
 	fun! s:CheckLeaveLine(line)
-		if ('cpo' !~ 'I') && exists('b:stabs_last_align') && (a:line == b:stabs_last_align)
+		if (&cpo !~ 'I') && exists('b:stabs_last_align') && (a:line == b:stabs_last_align)
 			exe 's/'.s:GetIndentRegex().' *$//e'
 		endif
 	endfun
@@ -216,7 +216,7 @@ endfun
 " This is trickier than it should be, but this seems to work.
 fun! StabsCR()
 	if getline('.') =~ s:GetIndentRegex().' *$'
-		if ('cpo' !~ 'I') && exists('b:stabs_last_align') && (line('.') == b:stabs_last_align)
+		if (&cpo !~ 'I') && exists('b:stabs_last_align') && (line('.') == b:stabs_last_align)
 			return "^\<c-d>\<CR>"
 		endif
 		return "\<CR>"
