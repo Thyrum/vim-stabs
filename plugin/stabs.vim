@@ -221,7 +221,8 @@ fun! StabsCR()
 		endif
 		return "\<CR>"
 	else
-		return "\<CR>\<c-r>=StabsFixAlign(line('.'))\<CR>\<END>"
+		return "\<CR>\<c-r>=StabsFixAlign(line('.'))\<CR>\<END>" .
+		       \"\<ESC>:normal!^\<CR>:startinsert\<CR>"
 	endif
 endfun
 
