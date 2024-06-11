@@ -221,8 +221,15 @@ fun! StabsCR()
 		endif
 		return "\<CR>"
 	else
-		return "\<CR>\<c-r>=StabsFixAlign(line('.'))\<CR>\<END>" .
-		       \"\<ESC>:normal!^\<CR>:startinsert\<CR>"
+		let l:ret = "\<CR>\<c-r>=StabsFixAlign(line('.'))\<CR>\<END>"
+		let l:gotobegin = "\<ESC>:normal!^\<CR>:startinsert\<CR>"
+		let l:restofline = getline('.')[(col('.') - 1):]
+		if len(l:restofline) && l:restofline !~ '^\s*$'
+			" goto first nonblank only if <CR> came in middle of
+			" line, ie had something besides whitespace after it
+			let l:ret .= l:gotobegin
+		endif
+		return l:ret
 	endif
 endfun
 
