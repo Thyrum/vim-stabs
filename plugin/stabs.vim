@@ -215,6 +215,10 @@ endfun
 " Get the spaces at the end of the indent correct.
 " This is trickier than it should be, but this seems to work.
 fun! StabsCR()
+
+	" For other than normal buffer types, act as a no-op
+	if !empty(getbufvar(bufnr(), '&buftype')) | return "\<CR>" | endif
+
 	if getline('.') =~ s:GetIndentRegex().' *$'
 		if ('cpo' !~ 'I') && exists('b:stabs_last_align') && (line('.') == b:stabs_last_align)
 			return "^\<c-d>\<CR>"
